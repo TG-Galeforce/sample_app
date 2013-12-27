@@ -80,6 +80,11 @@ describe "Authentication" do
           it { should have_title('Sign in') }
         end
       end
+
+      describe "when not signed in, general" do #Exercise 9.3. Does this check all pages?
+      	it { should_not have_link('Profile') }
+      	it { should_not have_link('Settings')}
+      end
     end
 
     describe "as wrong user" do
@@ -108,6 +113,17 @@ describe "Authentication" do
       describe "submitting a DELETE request to the Users#destroy action" do
         before { delete user_path(user) }
         specify { expect(response).to redirect_to(root_url) }
+      end
+
+      describe "with admin attribute set to 'true'" do
+        let(:admin) { FactoryGirl.create(:admin) }
+
+        before { sign_in admin, no_capybara: true }
+
+        describe "submitting a DELETE request to the Users#destroy action" do
+          before { delete user_path(admin) }
+          specify { expect(response).to redirect_to(root_url) }
+        end
       end
     end
   end

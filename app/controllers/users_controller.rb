@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :update, :destroy] #Filter only acts on edit, update. Only csigned in users can access those metods.
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: :destroy
+  before_action :not_self,       only: :destroy
 
   def index
     @users = User.paginate(page: params[:page])
@@ -12,6 +13,9 @@ class UsersController < ApplicationController
   end
 
   def new
+    if signed_in? #Exercise 9.6, untested but presumably works
+      redirect_to root_url
+    end
   	@user = User.new
   end
 
@@ -67,5 +71,10 @@ class UsersController < ApplicationController
 
     def admin_user
       redirect_to(root_url) unless current_user.admin?
+    end
+
+    def not_self
+      @user = User.find(params[:id])
+      redirect_to(root_url) if current_user?(@user)
     end
 end
