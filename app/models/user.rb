@@ -1,6 +1,9 @@
 class User < ActiveRecord::Base
+    has_many :microposts, dependent: :destroy
+
     before_save { self.email = email.downcase }
     before_create :create_remember_token
+
     validates :name,  presence: true, length: { maximum: 50 }
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
     validates :email, presence: true, format: { with: VALID_EMAIL_REGEX }
@@ -15,6 +18,11 @@ class User < ActiveRecord::Base
 
   def User.encrypt(token)
     Digest::SHA1.hexdigest(token.to_s)
+  end
+
+  def feed
+    # This is preliminary. See "Following users" for the full implementation.
+    Micropost.where("user_id = ?", id) #'?' escapes id, prevents SQL Injection.
   end
 
   private
