@@ -1,4 +1,4 @@
-module MicropostsHelper
+module MicropostsHelper #Text wrapping implemented.
 
   def wrap(content)
     sanitize(raw(content.split.map{ |s| wrap_long_string(s) }.join(' ')))
